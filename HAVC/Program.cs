@@ -14,7 +14,7 @@ namespace HAVC
             Program program = new Program();
             OutdoorPara outdoorPara = new OutdoorPara();
 
-            float[] total_cooling_load = new float[24];
+            float[] total_cooling_load = new float[outdoorPara.temperature_env.Length];
             for (int i = 0; i < outdoorPara.temperature_env.Length; i++)
             {
                 total_cooling_load[i] = program.get_total_cooling_load(outdoorPara.temperature_env[i], 23, 200, 150, 200, 0.3f, 0.2f, 
@@ -33,7 +33,7 @@ namespace HAVC
                 + part.get_cooling_load_person(num_person, load_aPerson, rate_cluster)
                 + part.get_cooling_load_lighting(load_powerDensity_lighting, area_location)
                 + part.get_cooling_load_equipment(load_powerDensity_equipment, area_location)
-                + part.get_cooling_solarRadiation(area_wall, rate_wal_div_win, load_solarRadiation, rate_solarRadiation);
+                + part.get_cooling_load_solarRadiation(area_wall, rate_wal_div_win, load_solarRadiation, rate_solarRadiation);
 
             return total_cooling_load;
         }
@@ -95,7 +95,7 @@ namespace HAVC
         {
             return load_powerDensity_equipment * area_location;
         }
-        public float get_cooling_solarRadiation(float area_wall, float rate_wal_div_win, float load_solarRadiation, float rate_solarRadiation)
+        public float get_cooling_load_solarRadiation(float area_wall, float rate_wal_div_win, float load_solarRadiation, float rate_solarRadiation)
         {
             float area_window = area_wall * rate_wal_div_win;
             return load_solarRadiation * area_window * rate_solarRadiation;
