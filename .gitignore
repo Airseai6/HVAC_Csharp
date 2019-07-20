@@ -1,0 +1,6 @@
+# Ignore C# project files build by Visual Studio 2019
+.vs/
+bin/
+obj/
+*.sln
+*.csproj
