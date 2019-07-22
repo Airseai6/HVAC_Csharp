@@ -17,18 +17,18 @@ namespace HAVC
             float[] total_cooling_load = new float[outdoorPara.temperature_env.Length];
             for (int i = 0; i < outdoorPara.temperature_env.Length; i++)
             {
-                total_cooling_load[i] = get_total_cooling_load(outdoorPara.temperature_env[i], 23, 200, 150, 200, 0.3f, 0.2f, 
+                total_cooling_load[i] = get_total_cooling_load(outdoorPara.temperature_env[i], 23, 200, 150, 200, 0.3f, 0.2f, 0.8f,
                     0.5f, 150, 30, 0.98f, 10, 50, outdoorPara.load_solarRadiation[i], 0.2f);
                 Console.WriteLine("{0}时的冷负荷为：{1}", i, total_cooling_load[i]);
             }
             //Console.WriteLine("区域逐时冷负荷为：{0}", total_cooling_load);
         }
         public static float get_total_cooling_load(float temperature_env, float temperature_set, float area_location, float area_wall, float area_roof, 
-            float rate_wal_div_win, float k_wall, float k_window, float load_aPerson, int num_person, float rate_cluster, 
+            float rate_wal_div_win, float k_wall, float k_roof, float k_window, float load_aPerson, int num_person, float rate_cluster, 
             float load_powerDensity_lighting, float load_powerDensity_equipment, float load_solarRadiation, float rate_solarRadiation)
         {
             Building part = new Building();
-            float total_cooling_load = part.get_cooling_load_wall(k_wall, area_wall, area_roof, temperature_env, temperature_set)
+            float total_cooling_load = part.get_cooling_load_wall(k_wall, k_roof, area_wall, area_roof, temperature_env, temperature_set)
                 + part.get_cooling_load_window(area_wall, rate_wal_div_win, k_window, temperature_env, temperature_set)
                 + part.get_cooling_load_person(num_person, load_aPerson, rate_cluster)
                 + part.get_cooling_load_lighting(load_powerDensity_lighting, area_location)
@@ -62,6 +62,7 @@ namespace HAVC
         //public float area_window;   //output
         //public float rate_wal_div_win; //input
         //public float k_wall;    //input
+        //public float k_roof;    //input
         //public float k_window;  //input
 
         //public float load_aPerson;  //input
@@ -74,9 +75,9 @@ namespace HAVC
         //public float load_solarRadiation;   //call
         //public float rate_solarRadiation;  //input 光照的某系数
 
-        public float get_cooling_load_wall(float k_wall, float area_wall, float area_roof, float temperature_env, float temperature_set)
+        public float get_cooling_load_wall(float k_wall, float k_roof, float area_wall, float area_roof, float temperature_env, float temperature_set)
         {
-            return k_wall * (area_wall+area_roof) * (temperature_env - temperature_set);
+            return (k_wall * area_wall + k_roof * area_roof) * (temperature_env - temperature_set);
         }
         public float get_cooling_load_window(float area_wall, float rate_wal_div_win, float k_window, float temperature_env, float temperature_set)
         {
