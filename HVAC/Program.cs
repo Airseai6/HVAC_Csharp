@@ -18,14 +18,14 @@ namespace HAVC
             for (int i = 0; i < outdoorPara.temperature_env.Length; i++)
             {
                 total_cooling_load[i] = get_total_cooling_load(outdoorPara.temperature_env[i], 23, 200, 150, 200, 0.3f, 0.2f, 0.8f,
-                    0.5f, 150, 30, 0.98f, 10, 50, outdoorPara.load_solarRadiation[i], 0.2f);
+                    0.5f, 150, 30, 0.98f, 10, 50, outdoorPara.load_solarRadiation[i], 0.2f, 3);
                 Console.WriteLine("{0}时的冷负荷为：{1}", i, total_cooling_load[i]);
             }
             //Console.WriteLine("区域逐时冷负荷为：{0}", total_cooling_load);
         }
         public static float get_total_cooling_load(float temperature_env, float temperature_set, float area_location, float area_wall, float area_roof, 
             float rate_wal_div_win, float k_wall, float k_roof, float k_window, float load_aPerson, int num_person, float rate_cluster, 
-            float load_powerDensity_lighting, float load_powerDensity_equipment, float load_solarRadiation, float rate_solarRadiation)
+            float load_powerDensity_lighting, float load_powerDensity_equipment, float load_solarRadiation, float rate_solarRadiation, float m_newAir)
         {
             Building part = new Building();
             float total_cooling_load = part.get_cooling_load_wall(k_wall, k_roof, area_wall, area_roof, temperature_env, temperature_set)
@@ -33,7 +33,8 @@ namespace HAVC
                 + part.get_cooling_load_person(num_person, load_aPerson, rate_cluster)
                 + part.get_cooling_load_lighting(load_powerDensity_lighting, area_location)
                 + part.get_cooling_load_equipment(load_powerDensity_equipment, area_location)
-                + part.get_cooling_load_solarRadiation(area_wall, rate_wal_div_win, load_solarRadiation, rate_solarRadiation);
+                + part.get_cooling_load_solarRadiation(area_wall, rate_wal_div_win, load_solarRadiation, rate_solarRadiation)
+                + part.get_cooling_load_newAir(num_person, temperature_env, temperature_set, m_newAir);
 
             return total_cooling_load;
         }
@@ -100,6 +101,12 @@ namespace HAVC
         {
             float area_window = area_wall * rate_wal_div_win;
             return load_solarRadiation * area_window * rate_solarRadiation;
+        }
+        public float get_cooling_load_newAir(int num_person, float temperature_env, float temperature_set, float m_newAir, float rate_hk = 0.1f, float rate_hb = 5.1f)
+        {
+            float enthalpy_env = rate_hk * temperature_env + rate_hb;
+            float enthalpy_set = rate_hk * temperature_set + rate_hb;
+            return 3.6f * num_person * m_newAir * (enthalpy_env - enthalpy_set);
         }
     }
 }
