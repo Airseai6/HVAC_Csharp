@@ -11,19 +11,19 @@ namespace HAVC
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            Program program = new Program();
+            // Program program = new Program();
             OutdoorPara outdoorPara = new OutdoorPara();
 
             float[] total_cooling_load = new float[outdoorPara.temperature_env.Length];
             for (int i = 0; i < outdoorPara.temperature_env.Length; i++)
             {
-                total_cooling_load[i] = program.get_total_cooling_load(outdoorPara.temperature_env[i], 23, 200, 150, 200, 0.3f, 0.2f, 
+                total_cooling_load[i] = get_total_cooling_load(outdoorPara.temperature_env[i], 23, 200, 150, 200, 0.3f, 0.2f, 
                     0.5f, 150, 30, 0.98f, 10, 50, outdoorPara.load_solarRadiation[i], 0.2f);
                 Console.WriteLine("{0}时的冷负荷为：{1}", i, total_cooling_load[i]);
             }
             //Console.WriteLine("区域逐时冷负荷为：{0}", total_cooling_load);
         }
-        public float get_total_cooling_load(float temperature_env, float temperature_set, float area_location, float area_wall, float area_roof, 
+        public static float get_total_cooling_load(float temperature_env, float temperature_set, float area_location, float area_wall, float area_roof, 
             float rate_wal_div_win, float k_wall, float k_window, float load_aPerson, int num_person, float rate_cluster, 
             float load_powerDensity_lighting, float load_powerDensity_equipment, float load_solarRadiation, float rate_solarRadiation)
         {
