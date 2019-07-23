@@ -22,6 +22,8 @@ namespace HAVC
                 Console.WriteLine("{0}时的冷负荷为：{1}", i, total_cooling_load[i]);
             }
             //Console.WriteLine("区域逐时冷负荷为：{0}", total_cooling_load);
+            float total_heat_load = get_total_heat_load(-10, 18, 1.2f, 200, 1, 0, 0, 0.05f, 0, 0.2f, 1.0056f, 1.29f, 20);
+            Console.WriteLine("冬季区域热负荷：{0}", total_heat_load);
         }
         public static float get_total_cooling_load(float temperature_env, float temperature_set, float area_location, float area_wall, float area_roof, 
             float rate_wal_div_win, float k_wall, float k_roof, float k_window, float load_aPerson, int num_person, float rate_cluster, 
@@ -38,6 +40,14 @@ namespace HAVC
 
             return total_cooling_load;
         }
+        public static float get_total_heat_load(float temperature_env_winter, float temperature_set, float k_wall, float area_wall, float rate_temperature, float rate_direction,
+            float rate_wind, float rate_twoWall, float rate_houseHight, float rate_interrupted, float cp_air, float denstiy_air, float volume_air)
+        {
+            Building part = new Building();
+            return part.get_heat_load_baseAdd(temperature_env_winter, temperature_set, k_wall, area_wall, rate_temperature, rate_direction,
+            rate_wind, rate_twoWall, rate_houseHight, rate_interrupted)
+                + part.get_heat_load_coolAir(temperature_env_winter, temperature_set, cp_air, denstiy_air, volume_air);
+        }
     }
 
     class OutdoorPara
@@ -53,6 +63,7 @@ namespace HAVC
     }
     class Building
     {
+        #region cooling load
         // 按照划分的区域计算
         //public float temperature_env;   //call
         //public float temperature_set;   //input
@@ -108,5 +119,34 @@ namespace HAVC
             float enthalpy_set = rate_hk * temperature_set + rate_hb;
             return 3.6f * num_person * m_newAir * (enthalpy_env - enthalpy_set);
         }
+        #endregion
+
+        #region heat load
+        //public float temperature_env_winter;  //冬季室外计算温度（读json）
+        //public float temperature_set;   //input
+        //public float k_wall;    //input
+        //public float area_wall; //input
+        //public float rate_temperature;    //温度修正
+
+        //public float rate_direction;    //朝向修正
+        //public float rate_wind; //风力修正
+        //public float rate_twoWall;  //两面外墙修正
+        //public float rate_houseHight;   //房高附加
+        //public float rate_interrupted;  //间歇附加率
+
+        //public float cp_air;    //干空气比热容
+        //public float denstiy_air;   //空气密度
+        //public float volume_air;    //体积
+        public float get_heat_load_baseAdd(float temperature_env_winter, float temperature_set, float k_wall, float area_wall, float rate_temperature, float rate_direction,
+            float rate_wind, float rate_twoWall, float rate_houseHight, float rate_interrupted)
+        {
+            float heat_load_base = rate_temperature * k_wall * area_wall * (temperature_set - temperature_env_winter);
+            return heat_load_base * (1 + rate_direction + rate_wind + rate_twoWall) * (1 + rate_houseHight) * (1 + rate_interrupted);
+        }
+        public float get_heat_load_coolAir(float temperature_env_winter, float temperature_set, float cp_air, float denstiy_air, float volume_air)
+        {
+            return 0.28f * cp_air * denstiy_air * volume_air * (temperature_set - temperature_env_winter);
+        }
+        #endregion
     }
 }
