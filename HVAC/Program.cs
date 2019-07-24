@@ -17,12 +17,12 @@ namespace HAVC
             float[] total_cooling_load = new float[outdoorPara.temperature_env.Length];
             for (int i = 0; i < outdoorPara.temperature_env.Length; i++)
             {
-                total_cooling_load[i] = get_total_cooling_load(outdoorPara.temperature_env[i], 23, 200, 150, 200, 0.3f, 0.2f, 0.8f,
+                total_cooling_load[i] = 1.2f * get_total_cooling_load(outdoorPara.temperature_env[i], 23, 200, 150, 200, 0.3f, 0.2f, 0.8f,
                     0.5f, 150, 30, 0.98f, 10, 50, outdoorPara.load_solarRadiation[i], 0.2f, 3);
                 Console.WriteLine("{0}时的冷负荷为：{1}", i, total_cooling_load[i]);
             }
             //Console.WriteLine("区域逐时冷负荷为：{0}", total_cooling_load);
-            float total_heat_load = get_total_heat_load(-10, 18, 1.2f, 200, 1, 0, 0, 0.05f, 0, 0.2f, 1.0056f, 1.29f, 20);
+            float total_heat_load =1.2f * get_total_heat_load(-27, 18, 1.2f, 200, 1, 0, 0, 0.05f, 0, 0.2f, 1.0056f, 1.29f, 20);
             Console.WriteLine("冬季区域热负荷：{0}", total_heat_load);
         }
         public static float get_total_cooling_load(float temperature_env, float temperature_set, float area_location, float area_wall, float area_roof, 
@@ -113,7 +113,7 @@ namespace HAVC
             float area_window = area_wall * rate_wal_div_win;
             return load_solarRadiation * area_window * rate_solarRadiation;
         }
-        public float get_cooling_load_newAir(int num_person, float temperature_env, float temperature_set, float m_newAir, float rate_hk = 0.1f, float rate_hb = 5.1f)
+        public float get_cooling_load_newAir(int num_person, float temperature_env, float temperature_set, float m_newAir, float rate_hk = 1.1f, float rate_hb = 5.1f)
         {
             float enthalpy_env = rate_hk * temperature_env + rate_hb;
             float enthalpy_set = rate_hk * temperature_set + rate_hb;
@@ -137,6 +137,7 @@ namespace HAVC
         //public float cp_air;    //干空气比热容
         //public float denstiy_air;   //空气密度
         //public float volume_air;    //体积
+
         public float get_heat_load_baseAdd(float temperature_env_winter, float temperature_set, float k_wall, float area_wall, float rate_temperature, float rate_direction,
             float rate_wind, float rate_twoWall, float rate_houseHight, float rate_interrupted)
         {
