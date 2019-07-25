@@ -4,7 +4,7 @@
  * 1、建筑冷热负荷计算，需要有逐时负荷体现尖峰负荷概念
  * 2、选型及运行系统部分的代码 TODO
  */
-namespace HAVC
+namespace HVAC
 {
     class Program
     {
@@ -149,5 +149,39 @@ namespace HAVC
             return 0.28f * cp_air * denstiy_air * volume_air * (temperature_set - temperature_env_winter);
         }
         #endregion
+    }
+
+    class HVAC_Equipment
+    {
+        public float flow_pump_primarySide; //一次侧循环泵流量
+        public float head_pump_primarySide; //一次侧循环泵扬程
+        public float power_pump_primarySide;    //一次侧循环泵功率
+        public float flow_pump_secondarySide;   //二次侧循环泵流量
+        public float head_pump_secondarySide;   //二次侧循环泵扬程
+        public float power_pump_secondarySide;  //二次侧循环泵功率
+
+        public float temperature_userSide_out = 12; //用户侧回水12度
+        public float temperature_userSide_in = 7;   //用户侧进水7度
+
+        public float temperature_equipSide_in;   //机组侧进水温度（冷却塔回水）
+        public float load_cooling_env;  //环境冷负荷
+        public float load_cooling;  //机组制冷量
+        public float load_heat;  //机组制热量
+        public float power_cooling;  //机组制冷功率
+        public float power_heat;  //机组制热功率
+
+        public float COP;  //机组COP
+        public int num_equipment;  //机组COP
+        public float cost_inital;  //机组初投资
+        public float cost_run;  //机组运行费用
+
+        public float run_equipment_coolWater(float load_cooling_env, float load_cooling, float power_cooling, int num_equipment,
+            float temperature_equipSide_in, float COP, float cost_inital, float cost_run, 
+            float rate_a = 0.0018f, float rate_b = -0.289f, float rate_c = 13.211f)
+        {
+            COP = rate_a * temperature_equipSide_in * temperature_equipSide_in + rate_b * temperature_equipSide_in + rate_c;
+
+            return 0;
+        }
     }
 }
