@@ -10,10 +10,8 @@ namespace HVAC
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
-            // Program program = new Program();
+            #region cooling and heat load
             OutdoorPara outdoorPara = new OutdoorPara();
-
             float[] total_cooling_load = new float[outdoorPara.temperature_env.Length];
             for (int i = 0; i < outdoorPara.temperature_env.Length; i++)
             {
@@ -21,12 +19,22 @@ namespace HVAC
                     0.5f, 150, 30, 0.98f, 10, 50, outdoorPara.load_solarRadiation[i], 0.2f, 3);
                 Console.WriteLine("{0}时的冷负荷为：{1}", i, total_cooling_load[i]);
             }
-            //Console.WriteLine("区域逐时冷负荷为：{0}", total_cooling_load);
-            float total_heat_load =1.2f * get_total_heat_load(-27, 18, 1.2f, 200, 1, 0, 0, 0.05f, 0, 0.2f, 1.0056f, 1.29f, 20);
+
+            float total_heat_load = 1.2f * get_total_heat_load(-27, 18, 1.2f, 200, 1, 0, 0, 0.05f, 0, 0.2f, 1.0056f, 1.29f, 20);
             Console.WriteLine("冬季区域热负荷：{0}", total_heat_load);
+            #endregion
+
+            #region equipment run
+            float a = 1;
+            float b = 1;
+            float c = 1;
+            bool d = true;
+            run_equipment(ref a, ref b, ref c, ref d);
+            Console.WriteLine(a + " " + b + " " + c + " " + d);
+            #endregion
         }
-        public static float get_total_cooling_load(float temperature_env, float temperature_set, float area_location, float area_wall, float area_roof, 
-            float rate_wal_div_win, float k_wall, float k_roof, float k_window, float load_aPerson, int num_person, float rate_cluster, 
+        public static float get_total_cooling_load(float temperature_env, float temperature_set, float area_location, float area_wall, float area_roof,
+            float rate_wal_div_win, float k_wall, float k_roof, float k_window, float load_aPerson, int num_person, float rate_cluster,
             float load_powerDensity_lighting, float load_powerDensity_equipment, float load_solarRadiation, float rate_solarRadiation, float m_newAir)
         {
             Building part = new Building();
@@ -47,6 +55,12 @@ namespace HVAC
             return part.get_heat_load_baseAdd(temperature_env_winter, temperature_set, k_wall, area_wall, rate_temperature, rate_direction,
             rate_wind, rate_twoWall, rate_houseHight, rate_interrupted)
                 + part.get_heat_load_coolAir(temperature_env_winter, temperature_set, cp_air, denstiy_air, volume_air);
+        }
+        public static void run_equipment(ref float a, ref float b, ref float c, ref bool d)
+        {
+            HVAC_Equipment equipment_coolWater = new HVAC_Equipment();
+            float[] coe = { 0.0018f, -0.289f, 13.211f };
+            equipment_coolWater.run_equipment(200, 200, ref a, 1, 33, ref b, 10000, ref c, coe, ref d);
         }
     }
 
@@ -153,35 +167,38 @@ namespace HVAC
 
     class HVAC_Equipment
     {
-        public float flow_pump_primarySide; //一次侧循环泵流量
-        public float head_pump_primarySide; //一次侧循环泵扬程
-        public float power_pump_primarySide;    //一次侧循环泵功率
-        public float flow_pump_secondarySide;   //二次侧循环泵流量
-        public float head_pump_secondarySide;   //二次侧循环泵扬程
-        public float power_pump_secondarySide;  //二次侧循环泵功率
+        //public float flow_pump_primarySide; //一次侧循环泵流量
+        //public float head_pump_primarySide; //一次侧循环泵扬程
+        //public float power_pump_primarySide;    //一次侧循环泵功率
+        //public float flow_pump_secondarySide;   //二次侧循环泵流量
+        //public float head_pump_secondarySide;   //二次侧循环泵扬程
+        //public float power_pump_secondarySide;  //二次侧循环泵功率
 
-        public float temperature_userSide_out = 12; //用户侧回水12度
-        public float temperature_userSide_in = 7;   //用户侧进水7度
+        //public float temperature_userSide_out = 12; //用户侧回水12度
+        //public float temperature_userSide_in = 7;   //用户侧进水7度
 
-        public float temperature_equipSide_in;   //机组侧进水温度（冷却塔回水）
-        public float load_cooling_env;  //环境冷负荷
-        public float load_cooling;  //机组制冷量
-        public float load_heat;  //机组制热量
-        public float power_cooling;  //机组制冷功率
-        public float power_heat;  //机组制热功率
+        //public float temperature_equipSide_in;   //机组侧进水温度（冷却塔回水）
+        //public float load_cooling_env;  //环境冷负荷
+        //public float load_cooling;  //机组制冷量
+        //public float load_heat;  //机组制热量
+        //public float power_cooling;  //机组制冷功率
+        //public float power_heat;  //机组制热功率
 
-        public float COP;  //机组COP
-        public int num_equipment;  //机组COP
-        public float cost_inital;  //机组初投资
-        public float cost_run;  //机组运行费用
+        //public float COP;  //机组COP
+        //public int num_equipment;  //机组COP
+        //public float cost_inital;  //机组初投资
+        //public float cost_run;  //机组运行费用
+        //public float[] coe_temAndCop; //公式系数
 
-        public float run_equipment_coolWater(float load_cooling_env, float load_cooling, float power_cooling, int num_equipment,
-            float temperature_equipSide_in, float COP, float cost_inital, float cost_run, 
-            float rate_a = 0.0018f, float rate_b = -0.289f, float rate_c = 13.211f)
+        public void run_equipment(float load_cooling_env, float load_cooling, ref float power_cooling, int num_equipment,
+            float temperature_equipSide_in, ref float COP, float cost_inital, ref float cost_run, float[] coe_temAndCop, ref bool flag_one)
         {
-            COP = rate_a * temperature_equipSide_in * temperature_equipSide_in + rate_b * temperature_equipSide_in + rate_c;
+            flag_one = num_equipment * load_cooling > load_cooling_env ? true : false; //是否满足环境负荷
 
-            return 0;
+            COP = coe_temAndCop[0] * temperature_equipSide_in * temperature_equipSide_in + coe_temAndCop[1] * temperature_equipSide_in + coe_temAndCop[2];
+            power_cooling = COP > 0 ? load_cooling / COP : 0;
+            cost_run = power_cooling * 0.89f * 16 * 180;   //计算年运行费用 一度电0.89，一天16h, 一年供冷180天。
+            float cost_total = cost_inital + cost_run;
         }
     }
 }
