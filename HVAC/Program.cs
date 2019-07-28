@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+
 /*
  * 建筑冷热源系统选型实验，体现知识点即可  2019-07-20
  * 1、建筑冷热负荷计算，需要有逐时负荷体现尖峰负荷概念
- * 2、选型及运行系统部分的代码 TODO
+ * 2、选型及运行系统部分的代码 2019-07-27
  */
 namespace HVAC
 {
@@ -22,6 +24,36 @@ namespace HVAC
 
             float total_heat_load = 1.2f * get_total_heat_load(-27, 18, 1.2f, 200, 1, 0, 0, 0.05f, 0, 0.2f, 1.0056f, 1.29f, 20);
             Console.WriteLine("冬季区域热负荷：{0}", total_heat_load);
+
+
+            //Dictionary<int, Array> dict = new Dictionary<int, Array>();
+            //dict.Add(300, { 51.43f, 36.7f, 65000});
+            //dict.Add(400, { 1, 2});
+            //Console.WriteLine(dict);
+            //Console.WriteLine(new List<string>(dict.Keys).ToArray());
+            float[] array = new float[] {};
+
+            Dictionary<int, Array> dict = new Dictionary<int, Array>();
+            array = new float[] { 51.43f, 36.7f, 65000 };
+            dict.Add(300, array);
+            array = new float[] { 1, 2 };
+            Console.WriteLine(array[0]);
+            dict.Add(400, array);
+            Console.WriteLine(dict[300]);
+
+            //object[] info = new object[] { };
+            //dict.TryGetValue(300, out info);
+            //Console.WriteLine();
+
+            foreach (float[] v in dict.Values)
+            {
+                Console.WriteLine(v);
+                for (int i = 0; i < v.Length; i++)
+                {
+                    Console.WriteLine(v[i]);
+                }
+            }
+
             #endregion
 
             #region equipment run
@@ -33,6 +65,7 @@ namespace HVAC
             Console.WriteLine(a + " " + b + " " + c + " " + d);
             #endregion
         }
+
         public static float get_total_cooling_load(float temperature_env, float temperature_set, float area_location, float area_wall, float area_roof,
             float rate_wal_div_win, float k_wall, float k_roof, float k_window, float load_aPerson, int num_person, float rate_cluster,
             float load_powerDensity_lighting, float load_powerDensity_equipment, float load_solarRadiation, float rate_solarRadiation, float m_newAir)
@@ -48,6 +81,7 @@ namespace HVAC
 
             return total_cooling_load;
         }
+
         public static float get_total_heat_load(float temperature_env_winter, float temperature_set, float k_wall, float area_wall, float rate_temperature, float rate_direction,
             float rate_wind, float rate_twoWall, float rate_houseHight, float rate_interrupted, float cp_air, float denstiy_air, float volume_air)
         {
@@ -56,11 +90,16 @@ namespace HVAC
             rate_wind, rate_twoWall, rate_houseHight, rate_interrupted)
                 + part.get_heat_load_coolAir(temperature_env_winter, temperature_set, cp_air, denstiy_air, volume_air);
         }
+
         public static void run_equipment(ref float a, ref float b, ref float c, ref bool d)
         {
             HVAC_Equipment equipment_coolWater = new HVAC_Equipment();
-            float[] coe = { 0.0018f, -0.289f, 13.211f };
-            equipment_coolWater.run_equipment(200, 200, ref a, 1, 33, ref b, 10000, ref c, coe, ref d);
+            float[] coe_COP_cool_coolWater = { 0.0018f, -0.289f, 13.211f };
+            float[] coe_COP_cool_groundPump = { 0.0038f, -0.4658f, 17.06f };
+            float[] coe_COP_cool_airPump = { -0.0016f, 0.0083f, 4.0685f };
+            float[] coe_COP_heat_groundPump = { 0.0022f, 0.0855f, 2.9625f };
+            float[] coe_COP_heat_airPump = { -0.0003f, 0.0506f, 2.968f };
+            equipment_coolWater.run_equipment(200, 200, ref a, 1, 33, ref b, 10000, ref c, coe_COP_cool_coolWater, ref d);
         }
     }
 
@@ -194,11 +233,22 @@ namespace HVAC
             float temperature_equipSide_in, ref float COP, float cost_inital, ref float cost_run, float[] coe_temAndCop, ref bool flag_one)
         {
             flag_one = num_equipment * load_cooling > load_cooling_env ? true : false; //是否满足环境负荷
+            //flag_one = num_equipment * load_heat > load_heat_env ? true : false;
 
             COP = coe_temAndCop[0] * temperature_equipSide_in * temperature_equipSide_in + coe_temAndCop[1] * temperature_equipSide_in + coe_temAndCop[2];
             power_cooling = COP > 0 ? load_cooling / COP : 0;
             cost_run = power_cooling * 0.89f * 16 * 180;   //计算年运行费用 一度电0.89，一天16h, 一年供冷180天。
             float cost_total = cost_inital + cost_run;
+        }
+
+        public void run_boiler(float load_heat_env, float load_heat, int num_equipment, float cost_inital, float cost_gasPrice, float num_gas,
+            float cost_run, ref bool flag_one)
+        {
+            flag_one = num_equipment * load_heat > load_heat_env ? true : false;
+
+            Dictionary<int, string> myDictionary = new Dictionary<int, string>();
+            
+            myDictionary.Add(300, "{51.43f, 36.7f, 65000}");
         }
     }
 }
