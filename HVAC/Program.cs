@@ -24,36 +24,6 @@ namespace HVAC
 
             float total_heat_load = 1.2f * get_total_heat_load(-27, 18, 1.2f, 200, 1, 0, 0, 0.05f, 0, 0.2f, 1.0056f, 1.29f, 20);
             Console.WriteLine("冬季区域热负荷：{0}", total_heat_load);
-
-
-            //Dictionary<int, Array> dict = new Dictionary<int, Array>();
-            //dict.Add(300, { 51.43f, 36.7f, 65000});
-            //dict.Add(400, { 1, 2});
-            //Console.WriteLine(dict);
-            //Console.WriteLine(new List<string>(dict.Keys).ToArray());
-            float[] array = new float[] {};
-
-            Dictionary<int, Array> dict = new Dictionary<int, Array>();
-            array = new float[] { 51.43f, 36.7f, 65000 };
-            dict.Add(300, array);
-            array = new float[] { 1, 2 };
-            Console.WriteLine(array[0]);
-            dict.Add(400, array);
-            Console.WriteLine(dict[300]);
-
-            //object[] info = new object[] { };
-            //dict.TryGetValue(300, out info);
-            //Console.WriteLine();
-
-            foreach (float[] v in dict.Values)
-            {
-                Console.WriteLine(v);
-                for (int i = 0; i < v.Length; i++)
-                {
-                    Console.WriteLine(v[i]);
-                }
-            }
-
             #endregion
 
             #region equipment run
@@ -63,9 +33,22 @@ namespace HVAC
             bool d = true;
             run_equipment(ref a, ref b, ref c, ref d);
             Console.WriteLine(a + " " + b + " " + c + " " + d);
+
+
+            bool flag_one = false;
+            float flow_water = 0;
+            float flow_gas = 0;
+            float cost_inital = 0;
+            float cost_run = 0;
+            float cost_pip = 0;
+            float cost_pump = 0;
+            float cost_heatExchanger = 0;
+            run_boiler(ref cost_inital, ref cost_run, ref flag_one, ref flow_water, ref flow_gas, ref cost_pip, ref cost_pump, ref cost_heatExchanger);
+            Console.WriteLine(flag_one + " " + flow_water +  " " + flow_gas);
             #endregion
         }
 
+        #region function
         public static float get_total_cooling_load(float temperature_env, float temperature_set, float area_location, float area_wall, float area_roof,
             float rate_wal_div_win, float k_wall, float k_roof, float k_window, float load_aPerson, int num_person, float rate_cluster,
             float load_powerDensity_lighting, float load_powerDensity_equipment, float load_solarRadiation, float rate_solarRadiation, float m_newAir)
@@ -101,6 +84,14 @@ namespace HVAC
             float[] coe_COP_heat_airPump = { -0.0003f, 0.0506f, 2.968f };
             equipment_coolWater.run_equipment(200, 200, ref a, 1, 33, ref b, 10000, ref c, coe_COP_cool_coolWater, ref d);
         }
+
+        public static void run_boiler(ref float cost_inital, ref float cost_run, ref bool flag_one, ref float flow_water, ref float flow_gas, ref float cost_pip, 
+            ref float cost_pump, ref float cost_heatExchanger)
+        {
+            HVAC_Equipment equipment_boiler = new HVAC_Equipment();
+            equipment_boiler.run_boiler(800, 400, 2, ref cost_inital, 14, ref cost_run, ref flag_one, ref flow_water, ref flow_gas, 488, 15, ref cost_pip, ref cost_pump, ref cost_heatExchanger);
+        }
+        #endregion
     }
 
     class OutdoorPara
@@ -114,6 +105,7 @@ namespace HVAC
         public float[] load_solarRadiation = { 0, 0, 0, 0, 0, 0, 0, 10, 20, 30, 40, 60, 100,
                120, 100, 60, 40, 30, 10, 5, 0, 0, 0, 0 };
     }
+
     class Building
     {
         #region cooling load
@@ -232,7 +224,7 @@ namespace HVAC
         public void run_equipment(float load_cooling_env, float load_cooling, ref float power_cooling, int num_equipment,
             float temperature_equipSide_in, ref float COP, float cost_inital, ref float cost_run, float[] coe_temAndCop, ref bool flag_one)
         {
-            flag_one = num_equipment * load_cooling > load_cooling_env ? true : false; //是否满足环境负荷
+            flag_one = num_equipment * load_cooling >= load_cooling_env ? true : false; //是否满足环境负荷
             //flag_one = num_equipment * load_heat > load_heat_env ? true : false;
 
             COP = coe_temAndCop[0] * temperature_equipSide_in * temperature_equipSide_in + coe_temAndCop[1] * temperature_equipSide_in + coe_temAndCop[2];
@@ -241,14 +233,39 @@ namespace HVAC
             float cost_total = cost_inital + cost_run;
         }
 
-        public void run_boiler(float load_heat_env, float load_heat, int num_equipment, float cost_inital, float cost_gasPrice, float num_gas,
-            float cost_run, ref bool flag_one)
+        public void run_boiler(float load_heat_env, float load_heat, int num_equipment, ref float cost_inital, float cost_gasPrice,
+            ref float cost_run, ref bool flag_one, ref float flow_water, ref float flow_gas, float time_numHours, float num_years, ref float cost_pip, ref float cost_pump, ref float cost_heatExchanger)
         {
-            flag_one = num_equipment * load_heat > load_heat_env ? true : false;
+            flag_one = num_equipment * load_heat >= load_heat_env ? true : false;
 
-            Dictionary<int, string> myDictionary = new Dictionary<int, string>();
-            
-            myDictionary.Add(300, "{51.43f, 36.7f, 65000}");
+            #region creat a dict
+            float[] array = new float[] { };
+            Dictionary<float, Array> dict_boiler = new Dictionary<float, Array>();
+            array = new float[] { 51.43f, 36.7f };
+            dict_boiler.Add(300, array);
+            array = new float[] { 68.57f, 49 };
+            dict_boiler.Add(400, array);
+            array = new float[] { 85.71f, 61.5f };
+            dict_boiler.Add(500, array);
+            array = new float[] { 102.86f, 73.5f };
+            dict_boiler.Add(600, array);
+
+            flow_water = (float)dict_boiler[load_heat].GetValue(0);
+            flow_gas = (float)dict_boiler[load_heat].GetValue(1);
+            #endregion
+
+            cost_inital = num_equipment * 220 * load_heat;
+            cost_pip = 0.1f * cost_inital;
+            cost_pump = 6 * 4000;
+            cost_heatExchanger = 16 * load_heat;
+            cost_run = cost_inital + cost_gasPrice * flow_gas * time_numHours * num_years;
+        }
+
+        public void central_heat(float load_heat_env)
+        {
+            float cost_inital = 16 * load_heat_env;
+            float flow_equSide = load_heat_env / 4.2f / 35 * 3.6f;
+            float flow_userSide = load_heat_env / 4.2f / 5 * 3.6f;
         }
     }
 }
