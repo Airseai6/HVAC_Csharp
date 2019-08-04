@@ -6,3 +6,4 @@ Properties/
 *.sln
 *.config
 *.csproj
+*.dll

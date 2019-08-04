@@ -6,6 +6,27 @@ using System.Threading.Tasks;
 
 namespace HVAC
 {
+    class EquipmentRun
+    {
+        public void run_equipment(ref float a, ref float b, ref float c, ref bool d)
+        {
+            HVAC_Equipment equipment_coolWater = new HVAC_Equipment();
+            float[] coe_COP_cool_coolWater = { 0.0018f, -0.289f, 13.211f };
+            float[] coe_COP_cool_groundPump = { 0.0038f, -0.4658f, 17.06f };
+            float[] coe_COP_cool_airPump = { -0.0016f, 0.0083f, 4.0685f };
+            float[] coe_COP_heat_groundPump = { 0.0022f, 0.0855f, 2.9625f };
+            float[] coe_COP_heat_airPump = { -0.0003f, 0.0506f, 2.968f };
+            equipment_coolWater.run_equipment(200, 200, ref a, 1, 33, ref b, 10000, ref c, coe_COP_cool_coolWater, ref d);
+        }
+
+        public void run_boiler(ref float cost_inital, ref float cost_run, ref bool flag_one, ref float flow_water, ref float flow_gas, ref float cost_pip,
+            ref float cost_pump, ref float cost_heatExchanger)
+        {
+            HVAC_Equipment equipment_boiler = new HVAC_Equipment();
+            equipment_boiler.run_boiler(800, 400, 2, ref cost_inital, 14, ref cost_run, ref flag_one, ref flow_water, ref flow_gas, 488, 15, ref cost_pip, ref cost_pump, ref cost_heatExchanger);
+        }
+    }
+
     class HVAC_Equipment
     {
         //public float flow_pump_primarySide; //一次侧循环泵流量
