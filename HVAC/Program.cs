@@ -49,7 +49,12 @@ namespace HVAC
 
             #region heat load
             LoadHeatCal hcal = new LoadHeatCal();
-            float total_heat_load = 1.2f * hcal.get_total_heat_load(-27, 18, 1.2f, 200, 1, 0, 0, 0.05f, 0, 0.2f, 1.0056f, 1.29f, 20);
+            float heat_load_base = 0;
+            float heat_load_baseAdd = 0;
+            float load_coolAir = 0;
+            float total_heat_load = 0;
+            hcal.get_total_heat_load(1, 0.4f, 400, 18, -27, ref heat_load_base, 0, 0, 0.05f, 0, 0.2f, ref heat_load_baseAdd, 
+                1.0056f, 1.29f, 20, ref load_coolAir, 1.2f, ref total_heat_load);
             Console.WriteLine("冬季区域热负荷：{0}", total_heat_load);
             #endregion
 

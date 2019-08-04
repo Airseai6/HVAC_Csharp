@@ -29,8 +29,8 @@ namespace HVAC
         /// <param name="load_partTwoOne">太阳辐射（第二点一部分）</param>
         /// <param name="num_person">区域中的人数</param>
         /// <param name="m_newAir">新风量M(kg/h)</param>
-        /// <param name="enthalpy_env">室外空气炫值hi kj/kg</param>
-        /// <param name="enthalpy_set">室内空气炫值h2 kj/kg</param>
+        /// <param name="enthalpy_env">室外空气焓值hi kj/kg</param>
+        /// <param name="enthalpy_set">室内空气焓值h2 kj/kg</param>
         /// <param name="load_partThree">新风负荷（第三部分）</param>
         /// <param name="rate_cluster">Cr群集系数</param>
         /// <param name="load_aPerson">每个人的热量(W)</param>
