@@ -89,7 +89,7 @@ namespace HVAC
         {
             enthalpy_env = rate_hk * temperature_env + rate_hb;
             enthalpy_set = rate_hk * temperature_set + rate_hb;
-            return 3.6f * num_person * m_newAir * (enthalpy_env - enthalpy_set);
+            return  num_person * m_newAir * (enthalpy_env - enthalpy_set) / 3.6f;
         }
 
         public float get_cooling_load_person(int num_person, float load_aPerson, float rate_cluster)
