@@ -54,7 +54,7 @@ namespace HVAC
 
         public float get_heat_load_coolAir(float temperature_env_winter, float temperature_set, float cp_air, float denstiy_air, float volume_air)
         {
-            return 0.28f * cp_air * denstiy_air * volume_air * (temperature_set - temperature_env_winter);
+            return cp_air * denstiy_air * volume_air * (temperature_set - temperature_env_winter);
         }
 
         #endregion
