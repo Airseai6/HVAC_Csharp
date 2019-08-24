@@ -60,7 +60,9 @@ namespace HVAC
             #endregion
 
             #region equipment run2
-            EquipmentRun3_地源热泵 eRun = new EquipmentRun3_地源热泵();
+            //EquipmentRun2 eRun = new EquipmentRun2();
+            //EquipmentRun3_地源热泵 eRun = new EquipmentRun3_地源热泵();
+            EquipmentRun4_空气源热泵 eRun = new EquipmentRun4_空气源热泵();
             float _冷水机组_冷冻水出口压力 = 0;
             float _冷水机组_制冷量 = 0;
             float _冷水机组_冷冻水进口压力 = 0;
