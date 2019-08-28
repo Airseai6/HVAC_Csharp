@@ -62,7 +62,7 @@ namespace HVAC
             #region equipment run2
             //EquipmentRun2 eRun = new EquipmentRun2();
             //EquipmentRun3_地源热泵 eRun = new EquipmentRun3_地源热泵();
-            EquipmentRun4_空气源热泵 eRun = new EquipmentRun4_空气源热泵();
+            //EquipmentRun4_空气源热泵 eRun = new EquipmentRun4_空气源热泵();
             float _冷水机组_冷冻水出口压力 = 0;
             float _冷水机组_制冷量 = 0;
             float _冷水机组_冷冻水进口压力 = 0;
@@ -89,11 +89,12 @@ namespace HVAC
             float _系统_COP = 0;
             bool ISCan_机组均启动 = false;
             bool ISCan_满足负荷运行 = false;
-            eRun.equipment_run(930, 1f, ref _冷却水泵_进口压力, _冷却水泵_扬程, ref _冷却水泵_出口压力, ref _冷却水泵_流量, ref _冷却水泵_运行功率, 2, ref _冷却塔_进水温度, ref _冷却塔_进水压力,
-                ref _冷却塔_出水压力, 3.7f, 2, ref _冷冻水泵_进口压力, _冷冻水泵_扬程, ref _冷冻水泵_出口压力, ref _冷冻水泵_流量, _冷冻水泵_流量, ref _冷冻水泵_运行功率, 50, 1, 2,
+
+            EquipmentRun2.equipment_run(930, 1f, ref _冷却水泵_进口压力, _冷却水泵_扬程, ref _冷却水泵_出口压力, ref _冷却水泵_流量, ref _冷却水泵_运行功率, 2, ref _冷却塔_进水温度, ref _冷却塔_进水压力,
+                ref _冷却塔_出水压力, 3.7f, 2, ref _冷冻水泵_进口压力, _冷冻水泵_扬程, ref _冷冻水泵_出口压力, ref _冷冻水泵_流量, _冷冻水泵_流量, ref _冷冻水泵_运行功率, 50, 1, 1, 2,
                 504, 85.9f, ref _冷水机组_冷冻水出口压力, ref _冷水机组_制冷量, ref _冷水机组_冷冻水进口压力, 30, ref _冷水机组_冷却水出口水温, 
                 ref _冷水机组_冷却水进口压力, ref _冷水机组_冷却水出口压力, ref _冷水机组_冷冻水流量, ref _冷水机组_冷却水流量, ref _冷水机组_机组功率, ref _冷水机组_COP, 50, 36, 2, 
-                ref _系统_COP, ref ISCan_机组均启动, ref ISCan_满足负荷运行, true
+                ref _系统_COP, ref ISCan_机组均启动, ref ISCan_满足负荷运行, 0
                 );
 
             Console.WriteLine("_冷水机组_冷冻水出口压力:" + _冷水机组_冷冻水出口压力 +
